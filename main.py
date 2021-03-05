@@ -5,7 +5,7 @@ import importlib
 
 parser = argparse.ArgumentParser(description="Wasserstein distance estimation comparison")
 parser.add_argument('--num_samples', type=int, default=100, help="number of samples from two distributions")
-parser.add_argument('--dimensions', type=int, default=2, help="dimensions of multivariate Gaussian")
+parser.add_argument('--dimensions', type=int, default=20, help="dimensions of multivariate Gaussian")
 
 args = parser.parse_args()
 
@@ -21,7 +21,7 @@ A = np.random.multivariate_normal(mean1, cov, N)
 B = np.random.multivariate_normal(mean2, cov, N)
 
 # WD estimating
-methods = ["wgan", "bgtf"]
+methods = ["pwil", "wgan", "bgrl"]
 for m in methods:
     import methods
     method = getattr(methods, m)(d, N)

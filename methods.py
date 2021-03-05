@@ -51,9 +51,9 @@ class wgan(Method):
             self.losses[i] = loss       
             self.vals[i] = self.estimate(As, Bs)         
 
-class bgtf(Method):
+class bgrl(Method):
     def __init__(self, input_shape, vol):
-        super(bgtf, self).__init__()
+        super(bgrl, self).__init__()
         self.input_shape = input_shape
         self.vol = vol
         self.gamma = 1.0 # control the effect of softmax
@@ -98,3 +98,27 @@ class bgtf(Method):
             loss = self.update_parameters(As, Bs)
             self.losses[i] = loss       
             self.vals[i] = self.estimate(As, Bs)  
+
+class pwil(Method):
+    def __init__(self, input_shape, vol):
+        super(pwil, self).__init__()
+        self.vol = vol
+
+    def estimate(self, As, Bs):
+        dist = np.zeros((self.vol,))
+        avail = [True for _ in range(self.vol)]
+        for i in range(self.vol):
+            min_idx = 0
+            min_dist = np.inf
+            for j in range(self.vol):
+                if avail[j]:
+                    d = np.linalg.norm(As[i] - Bs[j], ord=2)
+                    if d < min_dist:
+                        min_dist = d
+                        min_idx = j
+            avail[min_idx] = False
+            dist[i] = min_dist
+        return np.mean(dist)
+
+    def train(self, As, Bs):
+        pass
