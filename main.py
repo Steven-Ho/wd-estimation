@@ -12,7 +12,7 @@ args = parser.parse_args()
 # Data to estimate
 N = args.num_samples
 d = args.dimensions
-dv = 200.0 # deviation of two distributions
+dv = 20.0 # deviation of two distributions
 mean1 = np.zeros((d,))
 mean2 = np.zeros((d,))
 mean1[0] = dv
@@ -21,7 +21,7 @@ A = np.random.multivariate_normal(mean1, cov, N)
 B = np.random.multivariate_normal(mean2, cov, N)
 
 # WD estimating
-methods = ["wgan"]
+methods = ["wgan", "bgtf"]
 for m in methods:
     import methods
     method = getattr(methods, m)(d, N)
