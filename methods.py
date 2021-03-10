@@ -6,7 +6,7 @@ from torch.optim import Adam
 
 class wgan(Method):
     def __init__(self, input_shape, vol):
-        super(wgan, self).__init__()
+        super(wgan, self).__init__(2000)
         self.input_shape = input_shape
         self.vol = vol
         self.clamp_max = 0.01
@@ -53,7 +53,7 @@ class wgan(Method):
 
 class bgrl(Method):
     def __init__(self, input_shape, vol):
-        super(bgrl, self).__init__()
+        super(bgrl, self).__init__(500)
         self.input_shape = input_shape
         self.vol = vol
         self.gamma = 1.0 # control the effect of softmax
@@ -119,6 +119,58 @@ class pwil(Method):
             avail[min_idx] = False
             dist[i] = min_dist
         return np.mean(dist)
+
+    def train(self, As, Bs):
+        pass
+
+class swd(Method):
+    def __init__(self, input_shape, vol):
+        super(swd, self).__init__()
+        self.vol = vol
+        self.d = input_shape
+        self.M = 100
+
+    def estimate(self, As, Bs):
+        wd = np.zeros((self.M,))
+        cov = np.eye(self.d)
+        mean = np.zeros(self.d)
+        v = np.random.multivariate_normal(mean, cov, self.M)
+        l = 1./np.linalg.norm(v, ord=2, axis=-1)
+        v = v * l[:, None]
+        for i in range(self.M):
+            pA = np.matmul(As, v[i])
+            pB = np.matmul(Bs, v[i])
+            pA = np.sort(pA)
+            pB = np.sort(pB)
+            wd[i] = np.linalg.norm(pA - pB, ord=2)
+        return np.mean(wd)
+
+    def train(self, As, Bs):
+        pass
+
+class pwd(Method):
+    def __init__(self, input_shape, vol):
+        super(pwd, self).__init__()
+        self.vol = vol
+        self.d = input_shape
+        self.M = 100
+
+    def estimate(self, As, Bs):
+        wd = np.zeros((self.M,))
+        cov = np.eye(self.d)
+        mean = np.zeros(self.d)
+        v = np.random.multivariate_normal(mean, cov, self.M)
+        l = 1./np.linalg.norm(v, ord=2, axis=-1)
+        v = v * l[:, None]
+        for i in range(self.M):
+            pA = np.matmul(As, v[i])
+            pB = np.matmul(Bs, v[i])
+            iA = np.argsort(pA)
+            iB = np.argsort(pB)
+            A = As[iA]
+            B = Bs[iB]
+            wd[i] = np.mean(np.linalg.norm(A - B, ord=2, axis=-1))
+        return np.mean(wd)
 
     def train(self, As, Bs):
         pass

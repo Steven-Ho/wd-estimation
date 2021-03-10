@@ -1,8 +1,8 @@
 import numpy as np 
 
 class Method(object):
-    def __init__(self):
-        self.max_iter = 1000
+    def __init__(self, max_iter=0):
+        self.max_iter = max_iter
 
     def estimate(self, As, Bs):
         raise NotImplementedError
