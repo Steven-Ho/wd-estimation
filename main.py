@@ -6,8 +6,8 @@ import methods
 
 parser = argparse.ArgumentParser(description="Wasserstein distance estimation comparison")
 parser.add_argument('--num_samples', type=int, default=100, help="number of samples from two distributions")
-parser.add_argument('--dimensions', type=int, default=20, help="dimensions of multivariate Gaussian")
-parser.add_argument('--method', type=str, default="bgrl", help="method of calculating WD")
+parser.add_argument('--dimensions', type=int, default=5, help="dimensions of multivariate Gaussian")
+parser.add_argument('--method', type=str, default="swd", help="method of calculating WD")
 
 args = parser.parse_args()
 

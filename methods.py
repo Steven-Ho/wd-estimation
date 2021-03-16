@@ -174,3 +174,39 @@ class pwd(Method):
 
     def train(self, As, Bs):
         pass
+
+class opwd(Method):
+    def __init__(self, input_shape, vol):
+        super(opwd, self).__init__()
+        self.vol = vol
+        self.d = input_shape
+        self.M = 100
+
+    def estimate(self, As, Bs):
+        wd = np.zeros((self.M,))
+        cov = np.eye(self.d)
+        mean = np.zeros(self.d)
+        v = np.random.multivariate_normal(mean, cov, self.M)
+        ovs = np.zeros((self.M, self.d))
+        k = 0
+        for t in range(self.M):
+            vt = v[t]
+            if k > 0:
+                for i in range(k):
+                    vt -= np.dot(vt, ovs[t-i-1])*ovs[t-i-1]
+            lt = 1./np.linalg.norm(vt, ord=2, axis=-1)
+            vt *= lt
+            ovs[t] = vt
+            k = (k+1) % self.d
+        for i in range(self.M):
+            pA = np.matmul(As, v[i])
+            pB = np.matmul(Bs, v[i])
+            iA = np.argsort(pA)
+            iB = np.argsort(pB)
+            A = As[iA]
+            B = Bs[iB]
+            wd[i] = np.mean(np.linalg.norm(A - B, ord=2, axis=-1))
+        return np.mean(wd)
+
+    def train(self, As, Bs):
+        pass
