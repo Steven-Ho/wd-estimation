@@ -175,6 +175,53 @@ class pwd(Method):
     def train(self, As, Bs):
         pass
 
+# Advanced pwds
+class apwd(Method):
+    def __init__(self, input_shape, vol):
+        super(apwd, self).__init__()
+        self.vol = vol
+        self.d = input_shape
+        self.M = 100
+
+    def estimate(self, As, Bs):
+        wd = np.zeros((self.M,))
+        cov = np.eye(self.d)
+        mean = np.zeros(self.d)
+        v = np.random.multivariate_normal(mean, cov, self.M)
+        l = 1./np.linalg.norm(v, ord=2, axis=-1)
+        v = v * l[:, None]
+        for i in range(self.M):
+            pA = np.matmul(As, v[i])
+            pB = np.matmul(Bs, v[i])
+            iA = np.argsort(pA)
+            iB = np.argsort(pB)
+            A = As[iA]
+            B = Bs[iB]
+            wd[i] = self.match(A, B)
+        return np.mean(wd)
+
+    def match(self, As, Bs):
+        D = As.shape[0]
+        T = Bs.shape[0]
+        count_A = [T for _ in range(D)]
+        count_B = [D for _ in range(T)]
+        i = j = 0
+        ret = 0.0
+        while i<D:
+            if count_A[i] == 0:
+                i += 1
+            elif count_B[j] == 0:
+                j += 1
+            else:
+                delta = min(count_A[i], count_B[j])
+                count_A[i] -= delta
+                count_B[i] -= delta
+                ret += np.linalg.norm(As[i] - Bs[j], ord=2, axis=-1)*delta
+        return ret/(D*T)
+
+    def train(self, As, Bs):
+        pass
+
 class opwd(Method):
     def __init__(self, input_shape, vol):
         super(opwd, self).__init__()
