@@ -215,7 +215,7 @@ class apwd(Method):
             else:
                 delta = min(count_A[i], count_B[j])
                 count_A[i] -= delta
-                count_B[i] -= delta
+                count_B[j] -= delta
                 ret += np.linalg.norm(As[i] - Bs[j], ord=2, axis=-1)*delta
         return ret/(D*T)
 
