@@ -142,7 +142,8 @@ class swd(Method):
             pB = np.matmul(Bs, v[i])
             pA = np.sort(pA)
             pB = np.sort(pB)
-            wd[i] = np.linalg.norm(pA - pB, ord=2)
+            # wd[i] = np.linalg.norm(pA - pB, ord=2)
+            wd[i] = np.sqrt(np.mean((pA - pB)**2))
         return np.mean(wd)
 
     def train(self, As, Bs):
@@ -169,7 +170,8 @@ class pwd(Method):
             iB = np.argsort(pB)
             A = As[iA]
             B = Bs[iB]
-            wd[i] = np.mean(np.linalg.norm(A - B, ord=2, axis=-1))
+            # wd[i] = np.mean(np.linalg.norm(A - B, ord=2, axis=-1))
+            wd[i] = np.sqrt(np.mean(np.linalg.norm(A - B, ord=2, axis=-1)**2))
         return np.mean(wd)
 
     def train(self, As, Bs):
@@ -216,8 +218,10 @@ class apwd(Method):
                 delta = min(count_A[i], count_B[j])
                 count_A[i] -= delta
                 count_B[j] -= delta
-                ret += np.linalg.norm(As[i] - Bs[j], ord=2, axis=-1)*delta
-        return ret/(D*T)
+                # ret += np.linalg.norm(As[i] - Bs[j], ord=2, axis=-1)*delta
+                ret += np.linalg.norm(As[i] - Bs[j], ord=2, axis=-1)**2*delta
+        # return ret/(D*T)
+        return np.sqrt(ret/(D*T))
 
     def train(self, As, Bs):
         pass
@@ -252,7 +256,8 @@ class opwd(Method):
             iB = np.argsort(pB)
             A = As[iA]
             B = Bs[iB]
-            wd[i] = np.mean(np.linalg.norm(A - B, ord=2, axis=-1))
+            # wd[i] = np.mean(np.linalg.norm(A - B, ord=2, axis=-1))
+            wd[i] = np.sqrt(np.mean(np.linalg.norm(A - B, ord=2, axis=-1)**2))
         return np.mean(wd)
 
     def train(self, As, Bs):

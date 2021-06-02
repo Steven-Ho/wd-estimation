@@ -19,8 +19,10 @@ def step_to_converge(dist):
     return T
 
 # Evaluating
+dictionary = {"wgan": "tf1", "bgrl": "tf2"}
 for x in ["wgan", "bgrl"]:
     method = getattr(methods, x)
+    name = dictionary[x]
 
     # 0. Training curve
     d = 2
@@ -37,8 +39,8 @@ for x in ["wgan", "bgrl"]:
     plt.plot(m.vals)
     plt.xlabel("Training steps")
     plt.ylabel("Estimated distance")
-    plt.title("Training curve: "+x)
-    plt.savefig("fig/"+x+"-curve.png")
+    plt.title("Training curve: "+name)
+    plt.savefig("fig/"+name+"-curve.png")
     plt.show()
     plt.clf()
 
@@ -63,8 +65,8 @@ for x in ["wgan", "bgrl"]:
     plt.plot(ldv, ldists)
     plt.xlabel("Normal center distance (log scale)")
     plt.ylabel("WD estimated value (log scale)")
-    plt.title("Linearity test: "+x)
-    plt.savefig("fig/"+x+"-linearity.png")
+    plt.title("Linearity test: "+name)
+    plt.savefig("fig/"+name+"-linearity.png")
     plt.show()
     plt.clf()
 
@@ -87,7 +89,7 @@ for x in ["wgan", "bgrl"]:
     plt.plot(d, steps)
     plt.xlabel("Dimensions of distribution")
     plt.ylabel("Steps to convergence")
-    plt.title("Convergence test: "+x)
-    plt.savefig("fig/"+x+"-convergence.png")
+    plt.title("Convergence test: "+name)
+    plt.savefig("fig/"+name+"-convergence.png")
     plt.show()
     plt.clf()
